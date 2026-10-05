@@ -5,7 +5,7 @@ This is a demonstration project for a local Streamlit application that executes 
 ## Features
 
 - Accept user queries from a Streamlit UI
-- Query a remote Model API (currently mockable) for tool selection
+- Query a remote Model API for tool selection
 - Parse the resulting tool name and arguments
 - Execute tools using the Alpha Vantage API
 - Display the selected tool, arguments, and real tool result in the Streamlit UI
@@ -34,7 +34,6 @@ cp .env.example .env
 
 Edit `.env` and set your values:
 - `ALPHA_VANTAGE_API_KEY`: Your real Alpha Vantage API key.
-- `MOCK_MODEL`: Set to `true` to test the UI and tool execution without the real Model API.
 - `MODEL_API_URL`: The URL of your ngrok / Kaggle model inference endpoint (when ready).
 
 ## Running the App
@@ -42,7 +41,3 @@ Edit `.env` and set your values:
 ```bash
 streamlit run app.py
 ```
-
-## Mock Mode
-
-For testing purposes before the Kaggle API is available, you can enable `MOCK_MODEL=true` in your `.env` file. This will use simple keyword matching to return sample tool JSON payloads.

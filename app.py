@@ -8,9 +8,9 @@ from tool_executor import execute_tool
 # Load environment variables
 load_dotenv()
 
-st.set_page_config(page_title="Tool Calling Demo", page_icon="🔧", layout="centered")
+st.set_page_config(page_title="Tool Calling", page_icon="🔧", layout="centered")
 
-st.title("Tool Calling Demo")
+st.title("Tool Calling")
 st.markdown("This application demonstrates local tool execution based on remote LLM tool selection.")
 
 query = st.text_area("Query", placeholder="e.g. What is the current stock price of Apple?")
@@ -28,11 +28,21 @@ if st.button("Run"):
                 st.error("Invalid response from Model API (expected JSON object).")
                 st.stop()
                 
+            # Handle natural language fallback
+            if "text_response" in model_response:
+                st.info("No suitable tool found.")
+                st.stop()
+                
             tool_name = model_response.get("name")
             tool_arguments = model_response.get("arguments")
             
             if not tool_name:
-                st.error("Model did not return a tool 'name'.")
+                st.info("No suitable tool found.")
+                st.stop()
+                
+            from tool_executor import TOOL_REGISTRY
+            if tool_name not in TOOL_REGISTRY:
+                st.info("No suitable tool found.")
                 st.stop()
                 
             if tool_arguments is None:
