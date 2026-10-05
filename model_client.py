@@ -34,9 +34,10 @@ def call_model_api(query: str) -> dict:
         for key in ["response", "tool_call", "message", "result"]:
             if key in data:
                 model_response = data[key]
-                # If it's a list of tool calls, take the first one
-                if isinstance(model_response, list) and len(model_response) > 0:
-                    model_response = model_response[0]
+
+                # If it's a list of tool calls, return ALL tool calls
+                if isinstance(model_response, list):
+                    return model_response
                     
                 if isinstance(model_response, dict):
                     return model_response

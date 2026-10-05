@@ -22,48 +22,64 @@ if st.button("Run"):
         try:
             with st.spinner("Calling Model API..."):
                 model_response = call_model_api(query)
-            
-            # Validate model response
-            if not isinstance(model_response, dict):
-                st.error("Invalid response from Model API (expected JSON object).")
-                st.stop()
-                
-            # Handle natural language fallback
-            if "text_response" in model_response:
-                st.info("No suitable tool found.")
-                st.stop()
-                
-            tool_name = model_response.get("name")
-            tool_arguments = model_response.get("arguments")
-            
-            if not tool_name:
-                st.info("No suitable tool found.")
-                st.stop()
-                
-            from tool_executor import TOOL_REGISTRY
-            if tool_name not in TOOL_REGISTRY:
-                st.info("No suitable tool found.")
-                st.stop()
-                
-            if tool_arguments is None:
-                st.error("Model did not return 'arguments'.")
+
+            # Normalize single tool call into a list
+            # This allows the app to handle both:
+            # - one tool
+            # - multiple tools
+            if isinstance(model_response, dict):
+                model_response = [model_response]
+
+            elif not isinstance(model_response, list):
+                st.error("Invalid response from Model API.")
                 st.stop()
 
-            st.subheader("Tool Used")
-            st.code(tool_name, language="text")
-            
-            st.subheader("Arguments")
-            st.json(tool_arguments)
-            
-            with st.spinner("Executing Tool..."):
-                result = execute_tool(tool_name, tool_arguments)
-                
-            st.subheader("Tool Result")
-            st.json(result)
-            
+            # Handle natural language fallback
+            if len(model_response) == 1 and "text_response" in model_response[0]:
+                st.info("No suitable tool found.")
+                st.stop()
+
+            from tool_executor import TOOL_REGISTRY
+
+            # Execute all selected tools
+            for i, tool_call in enumerate(model_response, start=1):
+
+                if not isinstance(tool_call, dict):
+                    st.error(f"Invalid tool call at position {i}.")
+                    continue
+
+                tool_name = tool_call.get("name")
+                tool_arguments = tool_call.get("arguments")
+
+                if not tool_name:
+                    st.error(f"Tool call {i} does not contain a tool name.")
+                    continue
+
+                if tool_name not in TOOL_REGISTRY:
+                    st.error(f"Unknown tool: {tool_name}")
+                    continue
+
+                if tool_arguments is None:
+                    st.error(f"Tool '{tool_name}' did not return 'arguments'.")
+                    continue
+
+                st.subheader(f"Tool {i}")
+                st.code(tool_name, language="text")
+
+                st.subheader("Arguments")
+                st.json(tool_arguments)
+
+                with st.spinner(f"Executing {tool_name}..."):
+                    result = execute_tool(tool_name, tool_arguments)
+
+                st.subheader("Tool Result")
+                st.json(result)
+
         except ValueError as ve:
             st.error(f"Validation Error: {ve}")
+
         except RuntimeError as re:
             st.error(f"Runtime Error: {re}")
+
         except Exception as e:
             st.error(f"An unexpected error occurred: {e}")
