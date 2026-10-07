@@ -1,7 +1,6 @@
 import os
 import requests
 import json
-from prompt import construct_prompt
 
 def call_model_api(query: str) -> dict:
     """
