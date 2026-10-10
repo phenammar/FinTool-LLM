@@ -8,9 +8,9 @@ from tool_executor import execute_tool
 # Load environment variables
 load_dotenv()
 
-st.set_page_config(page_title="Tool Calling", page_icon="🔧", layout="centered")
+st.set_page_config(page_title="FinTool", page_icon="🔧", layout="centered")
 
-st.title("Tool Calling")
+st.title("FinTool")
 st.markdown("This application demonstrates local tool execution based on remote LLM tool selection.")
 
 query = st.text_area("Query", placeholder="e.g. What is the current stock price of Apple?")
