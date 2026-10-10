@@ -38,7 +38,6 @@ Handler/
 ├── model_client.py     # HTTP client for the remote LLM API
 ├── tool_executor.py    # Dispatches tool calls to implementations
 ├── tool_schemas.py     # JSON schemas for all tools
-├── prompt.py           # System prompt construction
 ├── tools/
 │   ├── stock_price.py
 │   ├── historical_prices.py
