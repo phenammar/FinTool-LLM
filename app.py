@@ -1,6 +1,7 @@
 import streamlit as st
 from dotenv import load_dotenv
 import json
+import time
 
 from model_client import call_model_api
 from tool_executor import execute_tool
@@ -74,6 +75,10 @@ if st.button("Run"):
 
                 st.subheader("Tool Result")
                 st.json(result)
+
+                # Alpha Vantage free tier: 1 request per second
+                if i < len(model_response):
+                    time.sleep(1)
 
         except ValueError as ve:
             st.error(f"Validation Error: {ve}")
